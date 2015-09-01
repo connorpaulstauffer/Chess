@@ -9,12 +9,14 @@ require 'colorize'
 require 'byebug'
 
 class Board
-  attr_reader :selected_pos, :grid
+  attr_accessor :selected_pos, :grid, :current_player, :cursor_pos
+  attr_reader :game
 
-  def initialize(player = :blue, cursor_pos = [0, 0], selected_pos = nil)
+  def initialize(game, player = :blue, cursor_pos = [0, 0], selected_pos = nil)
     @cursor_pos = cursor_pos
     @selected_pos = selected_pos
     @current_player = player
+    @game = game
   end
 
   def [](row, col)
@@ -146,15 +148,6 @@ class Board
     nil
   end
 
-  # protected
-
-  attr_writer :grid
-
-  # private
-
-  attr_writer :selected_pos
-  attr_accessor :current_player, :cursor_pos
-
   def raise_move_error(piece, end_pos)
     if piece.moves_into_check?(end_pos)
       raise MoveError.new "Can't make a move that leaves you in check."
@@ -165,6 +158,10 @@ class Board
 
   def other_player
     (current_player == :black) ? :blue : :black
+  end
+
+  def is_human?
+    self.game.current_player.is_a?(HumanPlayer)
   end
 
   def render
@@ -178,15 +175,15 @@ class Board
       selected_piece = selected_pos.nil? ? nil : self[*selected_pos]
       cursor_piece = self[*cursor_pos]
 
-      # if [r_idx, c_idx] == cursor_pos
-      #   cell.to_s.colorize(background: :yellow)
-      # elsif selected_pos && selected_piece.valid_move?([r_idx, c_idx]) &&
-      #       selected_piece.color == current_player
-      #   cell.to_s.colorize(background: :green)
-      # elsif selected_pos.nil? && cursor_piece.valid_move?([r_idx, c_idx]) &&
-      #       cursor_piece.color == current_player
-      #   cell.to_s.colorize(background: :green)
-      if (r_idx + c_idx) % 2 == 0
+      if [r_idx, c_idx] == cursor_pos && is_human?
+        cell.to_s.colorize(background: :yellow)
+      elsif selected_pos && selected_piece.valid_move?([r_idx, c_idx]) &&
+            selected_piece.color == current_player && is_human?
+        cell.to_s.colorize(background: :green)
+      elsif selected_pos.nil? && cursor_piece.valid_move?([r_idx, c_idx]) &&
+            cursor_piece.color == current_player && is_human?
+        cell.to_s.colorize(background: :green)
+      elsif (r_idx + c_idx) % 2 == 0
         cell.to_s.colorize(background: :light_black)
       else
         cell.to_s.colorize(background: :white)

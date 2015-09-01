@@ -8,7 +8,7 @@ class Game
   attr_accessor :players
 
   def initialize(player1, player2)
-    @board = Board.new
+    @board = Board.new(self)
     board.populate_grid
     @players = [player1, player2]
     @players.each { |player| player.board = board}
@@ -23,7 +23,7 @@ class Game
     [player1, player2]
   end
 
-  def setup_player(color)
+  def self.setup_player(color)
     input = gets.chomp.downcase
     until ["h", "c"].include?(input)
       puts "Invalid input. 'h' for human, 'c' for computer."
@@ -41,6 +41,9 @@ class Game
     render_board
   end
 
+  def current_player
+    players.first
+  end
 
   private
 
@@ -59,10 +62,6 @@ class Game
   def switch_players!
     players.reverse!
     board.switch_players!
-  end
-
-  def current_player
-    players.first
   end
 
   def render_board
