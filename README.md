@@ -41,5 +41,5 @@ Ruby implementation of chess. Playable in the command line.
 Clone this repository to a local directory. ```cd``` into the repository. Run
 ```ruby game.rb```. You will be prompted to choose the game settings. On your
 turn, navigate the board with the w, a, s, and d keys. Select a piece
-with the enter key, navigate to where you would like the move, and confirm the
+with the enter key, navigate to where you would like to move, and confirm the
 move with the enter key.
